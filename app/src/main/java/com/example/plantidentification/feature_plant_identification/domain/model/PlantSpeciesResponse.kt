@@ -1,0 +1,2 @@
+package com.example.plantidentification.feature_plant_identification.domain.model
+
