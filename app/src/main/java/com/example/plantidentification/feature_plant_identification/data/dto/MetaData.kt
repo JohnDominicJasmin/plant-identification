@@ -1,4 +1,4 @@
-package com.example.plantidentification.data.dto
+package com.example.plantidentification.feature_plant_identification.data.dto
 
 
 import com.google.gson.annotations.SerializedName

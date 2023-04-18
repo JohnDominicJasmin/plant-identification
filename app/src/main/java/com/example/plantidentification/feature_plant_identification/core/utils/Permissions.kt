@@ -1,4 +1,4 @@
-package com.example.plantidentification.core.utils
+package com.example.plantidentification.feature_plant_identification.core.utils
 
 import android.content.Context
 import android.widget.Toast

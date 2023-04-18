@@ -1,7 +1,7 @@
-package com.example.plantidentification.core.di
+package com.example.plantidentification.feature_plant_identification.core.di
 
-import com.example.plantidentification.data.repository.MainRepositoryImpl
-import com.example.plantidentification.domain.repository.MainRepository
+import com.example.plantidentification.feature_plant_identification.data.repository.MainRepositoryImpl
+import com.example.plantidentification.feature_plant_identification.domain.repository.MainRepository
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn

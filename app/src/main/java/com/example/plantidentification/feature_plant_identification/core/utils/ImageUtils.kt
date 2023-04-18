@@ -1,4 +1,4 @@
-package com.example.plantidentification.core.utils
+package com.example.plantidentification.feature_plant_identification.core.utils
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -6,8 +6,8 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.provider.OpenableColumns
 import android.util.Base64
-import com.example.plantidentification.core.utils.save_images.ImageSaver
-import com.example.plantidentification.core.utils.save_images.ImageSaverFactory
+import com.example.plantidentification.feature_plant_identification.core.utils.save_images.ImageSaver
+import com.example.plantidentification.feature_plant_identification.core.utils.save_images.ImageSaverFactory
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber

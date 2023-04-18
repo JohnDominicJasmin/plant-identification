@@ -1,6 +1,6 @@
 @file:OptIn(ExperimentalPermissionsApi::class)
 
-package com.example.plantidentification.presentation
+package com.example.plantidentification
 
 import android.Manifest
 import android.content.Context
@@ -8,8 +8,7 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.Bundle
 import android.provider.OpenableColumns
-import android.util.Base64
-import androidx.activity.ComponentActivity
+import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -25,27 +24,25 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import com.example.plantidentification.R
-import com.example.plantidentification.core.utils.ImageUtils.saveImageToGallery
-import com.example.plantidentification.core.utils.requestPermission
+import com.example.plantidentification.feature_plant_identification.core.utils.ImageUtils.saveImageToGallery
+import com.example.plantidentification.feature_plant_identification.core.utils.requestPermission
+import com.example.plantidentification.feature_plant_identification.presentation.choosing_image.MainEvent
+import com.example.plantidentification.feature_plant_identification.presentation.choosing_image.MainViewModel
+import com.example.plantidentification.feature_plant_identification.presentation.guidelines.GuidelinesScreen
+import com.example.plantidentification.feature_plant_identification.presentation.plant_details.PlantInformation
+import com.example.plantidentification.feature_plant_identification.presentation.splash_screen.SplashScreen
 import com.example.plantidentification.ui.theme.PlantIdentificationTheme
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
 import com.google.accompanist.permissions.rememberPermissionState
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
-import org.json.JSONArray
-import org.json.JSONObject
+import kotlinx.coroutines.flow.collectLatest
 import timber.log.Timber
 import java.io.*
-import java.net.HttpURLConnection
-import java.net.URL
 
 @AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
@@ -57,11 +54,25 @@ class MainActivity : AppCompatActivity() {
                     modifier = Modifier.fillMaxSize(),
                     color = MaterialTheme.colors.background) {
 
+                    val viewModel: MainViewModel = hiltViewModel()
+                    val state by viewModel.state.collectAsState()
                     val navController = rememberNavController()
 
-                    NavHost(navController = navController , startDestination = "main-screen"){
-                        composable(route = "main-screen"){
-                            MainScreen()
+                    NavHost(navController = navController , startDestination = "splash-screen"){
+                        composable(route = "choosing-image"){
+                            ChooseImageScreen(viewModel = viewModel, navController = navController)
+                        }
+
+                        composable(route = "splash-screen"){
+                            SplashScreen(navController = navController)
+                        }
+
+                        composable(route = "guidelines"){
+                            GuidelinesScreen(navController = navController)
+                        }
+
+                        composable(route = "plant-info"){
+                            PlantInformation(state = state)
                         }
                     }
                 }
@@ -81,8 +92,9 @@ fun MainScreenPreview() {
 
 @OptIn(ExperimentalPermissionsApi::class)
 @Composable
-fun MainScreen(
-    viewModel: MainViewModel = hiltViewModel()
+fun ChooseImageScreen(
+    viewModel: MainViewModel,
+    navController: NavController
 ) {
 
     val context = LocalContext.current
@@ -154,6 +166,19 @@ fun MainScreen(
                 rationalMessage = "Storage permission is not yet granted.", onGranted = {
                     openGalleryResultLauncher.launch("image/*")
                 })
+        }
+    }
+
+    LaunchedEffect(key1 = true){
+        viewModel.event.collectLatest {event ->
+            when(event){
+                is MainEvent.ShowToastMessage -> {
+                    Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
+                }
+                is MainEvent.GetPlantInfo -> {
+                    navController.navigate(route = "plant-info")
+                }
+            }
         }
     }
 

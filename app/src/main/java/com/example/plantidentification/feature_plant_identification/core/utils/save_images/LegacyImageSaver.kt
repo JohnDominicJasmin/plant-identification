@@ -1,4 +1,4 @@
-package com.example.plantidentification.core.utils.save_images
+package com.example.plantidentification.feature_plant_identification.core.utils.save_images
 
 import android.content.Context
 import android.graphics.Bitmap
@@ -7,7 +7,7 @@ import android.net.Uri
 import android.os.Environment
 import androidx.core.content.FileProvider
 import com.example.plantidentification.BuildConfig
-import com.example.plantidentification.core.utils.ImageUtils.saveImageToStream
+import com.example.plantidentification.feature_plant_identification.core.utils.ImageUtils.saveImageToStream
 import java.io.File
 import java.io.FileOutputStream
 
