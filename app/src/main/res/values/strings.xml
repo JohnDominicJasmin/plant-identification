@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Plant Identification</string>
+    <string name="app_name">LeafGraphy</string>
+    <string name="guidelines">LeafGraphy allows you to identify Tree Species quickly and accurately. All you have to do is to point your camera, take a picture or upload a picture of the plants from your gallery and it will detect the plant in real-time.  Our App will also show you additional information about the plants and provide other names and its scientific name.</string>
 </resources>
