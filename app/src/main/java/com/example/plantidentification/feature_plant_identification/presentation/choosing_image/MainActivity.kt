@@ -1,7 +1,6 @@
 @file:OptIn(ExperimentalPermissionsApi::class)
 
-package com.example.plantidentification
-
+package com.example.plantidentification.feature_plant_identification.presentation.choosing_image
 import android.Manifest
 import android.content.Context
 import android.graphics.Bitmap
@@ -28,10 +27,9 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.plantidentification.R
 import com.example.plantidentification.feature_plant_identification.core.utils.ImageUtils.saveImageToGallery
 import com.example.plantidentification.feature_plant_identification.core.utils.requestPermission
-import com.example.plantidentification.feature_plant_identification.presentation.choosing_image.MainEvent
-import com.example.plantidentification.feature_plant_identification.presentation.choosing_image.MainViewModel
 import com.example.plantidentification.feature_plant_identification.presentation.guidelines.GuidelinesScreen
 import com.example.plantidentification.feature_plant_identification.presentation.plant_details.PlantInformation
 import com.example.plantidentification.feature_plant_identification.presentation.splash_screen.SplashScreen
@@ -58,6 +56,23 @@ class MainActivity : AppCompatActivity() {
                     val state by viewModel.state.collectAsState()
                     val navController = rememberNavController()
 
+                    val navigationScreenChanges by remember(state.startingDestination){
+                        derivedStateOf {
+                            state.startingDestination != "guidelines"
+                        }
+                    }
+
+                    LaunchedEffect(key1 = navigationScreenChanges){
+                        if(navigationScreenChanges){
+                            navController.navigate(state.startingDestination){
+                                popUpTo("splash-screen"){
+                                    inclusive = true
+                                }
+                                launchSingleTop = true
+                            }
+                        }
+                    }
+
                     NavHost(navController = navController , startDestination = "splash-screen"){
                         composable(route = "choosing-image"){
                             ChooseImageScreen(viewModel = viewModel, navController = navController)
@@ -68,7 +83,7 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         composable(route = "guidelines"){
-                            GuidelinesScreen(navController = navController)
+                            GuidelinesScreen(navController = navController, mainViewModel = viewModel)
                         }
 
                         composable(route = "plant-info"){
@@ -209,16 +224,17 @@ fun MainScreenContent(
         Button(onClick = onClickTakePhotoButton, modifier = Modifier.fillMaxWidth()) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_camera_alt_24),
-                contentDescription = "Take a photo")
-            Text(text = "Take a Photo", modifier = Modifier.padding(all = 8.dp))
+                contentDescription = "Take Photo" )
+            Text(text = "Take Photo", modifier = Modifier.padding(all = 8.dp))
         }
 
         Button(onClick = onClickSelectGalleryButton, modifier = Modifier.fillMaxWidth()) {
             Icon(
                 painter = painterResource(id = R.drawable.baseline_browse_gallery_24),
-                contentDescription = "Select from gallery")
+                contentDescription = "Select from Gallery")
             Text(text = "Select from Gallery", modifier = Modifier.padding(all = 8.dp))
         }
+
     }
 
 
@@ -238,7 +254,6 @@ fun getRealPathFromURI(uri: Uri, context: Context): String? {
         var read = 0
         val maxBufferSize = 1 * 1024 * 1024
         val bytesAvailable: Int = inputStream?.available() ?: 0
-        //int bufferSize = 1024;
         val bufferSize = Math.min(bytesAvailable, maxBufferSize)
         val buffers = ByteArray(bufferSize)
         while (inputStream?.read(buffers).also {

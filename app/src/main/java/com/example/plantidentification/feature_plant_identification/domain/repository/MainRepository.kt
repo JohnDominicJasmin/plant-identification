@@ -6,4 +6,6 @@ import com.example.plantidentification.feature_plant_identification.data.dto.Sug
 interface MainRepository {
 
     suspend fun recognizeFood(imageUri: String): PlantSpeciesDto
+    suspend fun userReadAppInformation(): Boolean
+    suspend fun setUserReadAppInformation()
 }

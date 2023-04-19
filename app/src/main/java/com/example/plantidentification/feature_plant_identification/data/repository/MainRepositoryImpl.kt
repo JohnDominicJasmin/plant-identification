@@ -1,20 +1,41 @@
 package com.example.plantidentification.feature_plant_identification.data.repository
 
+import android.content.Context
 import android.util.Base64
+import androidx.datastore.core.DataStore
+import androidx.datastore.preferences.core.booleanPreferencesKey
+import androidx.datastore.preferences.preferencesDataStore
+import com.example.plantidentification.feature_plant_identification.core.extensions.editData
+import com.example.plantidentification.feature_plant_identification.core.extensions.getData
 import com.example.plantidentification.feature_plant_identification.data.dto.PlantSpeciesDto
-import com.example.plantidentification.feature_plant_identification.data.dto.Suggestion
 import com.example.plantidentification.feature_plant_identification.domain.repository.MainRepository
 import com.google.gson.Gson
 import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.withContext
 import org.json.JSONArray
 import org.json.JSONObject
 import java.io.*
 import java.net.HttpURLConnection
 import java.net.URL
+import java.util.prefs.Preferences
+
+val Context.dataStore by preferencesDataStore(name = "preferences")
+private val DATA_STORE_INFORMATION_KEY = booleanPreferencesKey("information_key")
 
 class MainRepositoryImpl(
+    context: Context
 ) : MainRepository {
+
+    private var dataStore = context.dataStore
+
+    override suspend fun userReadAppInformation(): Boolean {
+        return dataStore.getData(key = DATA_STORE_INFORMATION_KEY, defaultValue = false).first()
+    }
+
+    override suspend fun setUserReadAppInformation() {
+        return dataStore.editData(DATA_STORE_INFORMATION_KEY, true)
+    }
 
     override suspend fun recognizeFood(imageUri: String): PlantSpeciesDto {
         val data = getDataJsonObject(imageUri)

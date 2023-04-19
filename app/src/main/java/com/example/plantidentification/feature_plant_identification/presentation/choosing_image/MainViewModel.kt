@@ -25,6 +25,9 @@ class MainViewModel
     private val _event = MutableSharedFlow<MainEvent>()
     val event = _event.asSharedFlow()
 
+    init{
+        getStartingDestination()
+    }
 
     fun recognizeFood(imagePath: String) {
         viewModelScope.launch(context = Dispatchers.IO) {
@@ -48,6 +51,37 @@ class MainViewModel
             }
         }
     }
+
+    private fun getStartingDestination(){
+        viewModelScope.launch(Dispatchers.IO) {
+
+            runCatching {
+                mainRepository.userReadAppInformation()
+            }.onSuccess {userRead ->
+                val startingDestination = if(userRead) "choosing-image" else "guidelines"
+                Timber.v("Starting Destination: $startingDestination")
+                _state.update {
+                    it.copy(startingDestination = startingDestination)
+                }
+            }.onFailure {
+                Timber.e("Error: ${it.localizedMessage}")
+            }
+
+        }
+    }
+
+    fun navigateToPlantInfoCompleted(){
+        viewModelScope.launch(Dispatchers.IO) {
+            runCatching {
+                mainRepository.setUserReadAppInformation()
+            }.onSuccess {
+                Timber.v("User read app information")
+            }.onFailure {
+                Timber.e("Error: ${it.localizedMessage}")
+            }
+        }
+    }
+
 
     private fun PlantSpeciesDto.getPlantWithHighestProbability(): Suggestion? {
         var maxProbability = -1.0

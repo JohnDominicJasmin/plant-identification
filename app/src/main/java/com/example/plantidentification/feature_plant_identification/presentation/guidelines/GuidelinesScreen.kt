@@ -24,11 +24,14 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.example.plantidentification.R
+import com.example.plantidentification.feature_plant_identification.presentation.choosing_image.MainViewModel
 
 @Composable
-fun GuidelinesScreen(navController: NavController) {
+fun GuidelinesScreen(navController: NavController, mainViewModel: MainViewModel) {
 
     GuidelinesContent(onClickStartButton = {
+
+        mainViewModel.navigateToPlantInfoCompleted()
         navController.navigate("choosing-image", navOptions {
             popUpTo("guidelines"){
                 inclusive = true
