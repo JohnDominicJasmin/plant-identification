@@ -8,6 +8,8 @@ import androidx.compose.material.OutlinedButton
 import androidx.compose.material.Surface
 import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,16 +26,21 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import androidx.navigation.navOptions
 import com.example.plantidentification.R
-import com.example.plantidentification.feature_plant_identification.presentation.choosing_image.MainViewModel
+import com.example.plantidentification.feature_plant_identification.presentation.choosing_image.MainState
 
 @Composable
-fun GuidelinesScreen(navController: NavController, mainViewModel: MainViewModel) {
+fun GuidelinesScreen(
+    navController: NavController,
+    onNavigateToPlantInfoCompleted: () -> Unit = {}) {
+
+
+
 
     GuidelinesContent(onClickStartButton = {
 
-        mainViewModel.navigateToPlantInfoCompleted()
+        onNavigateToPlantInfoCompleted()
         navController.navigate("choosing-image", navOptions {
-            popUpTo("guidelines"){
+            popUpTo("guidelines") {
                 inclusive = true
             }
         })
@@ -49,7 +56,9 @@ fun GuidelinesContent(onClickStartButton: () -> Unit = {}) {
         color = MaterialTheme.colors.background) {
 
         Column(
-            modifier = Modifier.fillMaxSize().padding(all = 12.dp),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(all = 12.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(22.dp)) {
 

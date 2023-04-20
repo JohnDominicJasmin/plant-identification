@@ -29,6 +29,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.plantidentification.R
 import com.example.plantidentification.feature_plant_identification.core.utils.ImageUtils.saveImageToGallery
+import com.example.plantidentification.feature_plant_identification.core.utils.ImageUtils.toImageUri
 import com.example.plantidentification.feature_plant_identification.core.utils.requestPermission
 import com.example.plantidentification.feature_plant_identification.presentation.guidelines.GuidelinesScreen
 import com.example.plantidentification.feature_plant_identification.presentation.plant_details.PlantInformation
@@ -56,40 +57,30 @@ class MainActivity : AppCompatActivity() {
                     val state by viewModel.state.collectAsState()
                     val navController = rememberNavController()
 
-                    val navigationScreenChanges by remember(state.startingDestination){
-                        derivedStateOf {
-                            state.startingDestination != "guidelines"
-                        }
-                    }
-
-                    LaunchedEffect(key1 = navigationScreenChanges){
-                        if(navigationScreenChanges){
-                            navController.navigate(state.startingDestination){
-                                popUpTo("splash-screen"){
-                                    inclusive = true
-                                }
-                                launchSingleTop = true
-                            }
-                        }
-                    }
-
                     NavHost(navController = navController , startDestination = "splash-screen"){
                         composable(route = "choosing-image"){
                             ChooseImageScreen(viewModel = viewModel, navController = navController)
                         }
 
                         composable(route = "splash-screen"){
-                            SplashScreen(navController = navController)
+                            SplashScreen(navController = navController, state = state)
                         }
 
                         composable(route = "guidelines"){
-                            GuidelinesScreen(navController = navController, mainViewModel = viewModel)
+                            GuidelinesScreen(navController = navController){
+                                viewModel.navigateToPlantInfoCompleted()
+                            }
                         }
 
                         composable(route = "plant-info"){
-                            PlantInformation(state = state)
+                            PlantInformation(state = state, navController = navController)
                         }
                     }
+
+
+
+
+
                 }
             }
         }
@@ -136,7 +127,7 @@ fun ChooseImageScreen(
 
     val openCameraResultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.TakePicturePreview()) { bitmapResult: Bitmap? ->
-            val uri = bitmapResult?.let(saveImageToGallery)
+            val uri = bitmapResult?.toImageUri(inContext = context)
             imageBitmap = bitmapResult
 
             uri?.let {

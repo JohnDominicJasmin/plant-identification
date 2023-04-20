@@ -4,5 +4,5 @@ data class MainState(
     val plantName:String = "",
     val plantDescription:String = "",
     val plantImageUrl:String = "",
-    val startingDestination: String = "guidelines"
+    val startingDestination: String = ""
 )
