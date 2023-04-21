@@ -5,5 +5,6 @@ data class MainState(
     val plantDescription:String = "",
     val plantImageUrl:String = "",
     val plantProbability:String = "",
-    val startingDestination: String = ""
+    val startingDestination: String = "",
+    val isLoading: Boolean = false
 )

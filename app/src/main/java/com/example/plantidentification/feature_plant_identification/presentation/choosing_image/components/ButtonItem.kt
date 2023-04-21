@@ -18,6 +18,7 @@ import com.example.plantidentification.R
 
 @Composable
 fun ButtonItem(
+    isEnabled:Boolean = true,
     modifier: Modifier = Modifier,
     icon: Int = -1,
     text: String = "",
@@ -35,6 +36,7 @@ fun ButtonItem(
             onClick = onClick,
             colors = ButtonDefaults.buttonColors(backgroundColor = Color(0xFFE0E0E0)),
             contentPadding = PaddingValues(vertical = 4.dp, horizontal = 0.dp),
+            enabled = isEnabled
         ) {
 
 
