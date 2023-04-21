@@ -36,13 +36,17 @@ class MainViewModel
             }.onSuccess { plantSpecies ->
                 plantSpecies.getPlantWithHighestProbability()?.let { plant ->
                     val name = plant.plantDetails.commonNames.maxBy { it.length }
+                    val plantProbability = String.format("%.2f", plant.probability)
+
                     _state.update {
                         it.copy(
                             plantName = name,
                             plantDescription = plant.plantDetails.wikiDescription.value,
-                            plantImageUrl = plantSpecies.images[0].url
+                            plantImageUrl = plantSpecies.images[0].url,
+                            plantProbability = plantProbability
                         )
                     }
+
                     _event.emit(value = MainEvent.GetPlantInfo)
                 }
 

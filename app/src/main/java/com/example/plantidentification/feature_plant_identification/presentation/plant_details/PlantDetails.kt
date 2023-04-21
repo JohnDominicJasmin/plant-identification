@@ -117,11 +117,12 @@ fun PreviewPlantDetails() {
         state = MainState(
             plantName = "blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium",
             plantImageUrl = "https://cdn.eyeem.com/thumb/4c6754110370bb1b6faf95d6e1d888ca9c3a9cc8-1570026251491/640/480",
+            plantProbability = "0.81",
             plantDescription = "Lorem ipsum dolor sit amet consectetur adipisicing elit. Maxime mollitia," +
                                "molestiae quas vel sint commodi repudiandae consequuntur voluptatum laborum" +
                                "numquam blanditiis harum quisquam eius sed odit fugiat iusto fuga praesentium" +
                                "optio, eaque rerum! Provident similique accusantium nemo autem. Veritatis" +
                                "obcaecati tenetur iure eius earum ut molestias architecto voluptate aliquam" +
-                               "nihil, eveniet aliquid culpa officia aut! Impedit sit sunt quaerat, odit,"
+                               "nihil, eveniet aliquid culpa officia aut! Impedit sit sunt quaerat, odit,",
         ))
 }
