@@ -58,9 +58,11 @@ fun ChooseImageScreen(
             imageUri = uriResult
             Timber.d("Uri ${uriResult.toString()}")
             uriResult?.let {
-
-                val imagePath = getRealPathFromURI(uri = uriResult, context = context) ?: return@let
-
+                val imagePath = getRealPathFromURI(uri = uriResult, context = context)
+                if(imagePath == null){
+                    Toast.makeText(context, "Image path is null.", Toast.LENGTH_LONG).show()
+                    return@let
+                }
                 viewModel.recognizeFood(imagePath = imagePath)
             }
         }
@@ -71,7 +73,11 @@ fun ChooseImageScreen(
             imageBitmap = bitmapResult
 
             uri?.let {
-                val imagePath = getRealPathFromURI(uri = uri, context = context) ?: return@let
+                val imagePath = getRealPathFromURI(uri = uri, context = context)
+                if(imagePath == null){
+                    Toast.makeText(context, "Image path is null.", Toast.LENGTH_LONG).show()
+                    return@let
+                }
                 viewModel.recognizeFood(imagePath = imagePath)
             }
         }
