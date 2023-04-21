@@ -32,8 +32,10 @@ class MainViewModel
     fun recognizeFood(imagePath: String) {
         viewModelScope.launch(context = Dispatchers.IO) {
             runCatching {
+                showLoading()
                 mainRepository.recognizeFood(imagePath)
             }.onSuccess { plantSpecies ->
+                hideLoading()
                 plantSpecies.getPlantWithHighestProbability()?.let { plant ->
                     val name = plant.plantDetails.commonNames.maxBy { it.length }
                     val plantProbability = String.format("%.2f", plant.probability)
@@ -51,14 +53,26 @@ class MainViewModel
                 }
 
             }.onFailure {
+                hideLoading()
                  _event.emit(value = MainEvent.ShowToastMessage(message = it.message.toString()))
             }
         }
     }
 
+    private fun showLoading(){
+        _state.update { it.copy(
+            isLoading = true
+        )}
+    }
+
+    private fun hideLoading(){
+        _state.update { it.copy(
+            isLoading = false
+        )}
+    }
+
     private fun getStartingDestination(){
         viewModelScope.launch(Dispatchers.IO) {
-
             runCatching {
                 mainRepository.userReadAppInformation()
             }.onSuccess {userRead ->
@@ -90,12 +104,12 @@ class MainViewModel
     private fun PlantSpeciesDto.getPlantWithHighestProbability(): Suggestion? {
         var maxProbability = -1.0
         var maxPlant: Suggestion? = null
-        for (i in suggestions.indices) {
-            val plant = suggestions[i]
-            val probability = plant.probability
+        if(suggestions.isEmpty()) return null
+        suggestions.forEach {
+            val probability = it.probability
             if (probability > maxProbability) {
                 maxProbability = probability
-                maxPlant = plant
+                maxPlant = it
             }
         }
         return maxPlant

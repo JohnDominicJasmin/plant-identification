@@ -10,15 +10,19 @@ import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.CircularProgressIndicator
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.plantidentification.R
 import com.example.plantidentification.feature_plant_identification.core.utils.ImageUtils.toImageUri
+import com.example.plantidentification.feature_plant_identification.core.utils.connection.ConnectionStatus.hasInternetConnection
 import com.example.plantidentification.feature_plant_identification.core.utils.requestPermission
 import com.example.plantidentification.feature_plant_identification.presentation.choosing_image.components.ButtonItem
 import com.example.plantidentification.feature_plant_identification.presentation.choosing_image.components.LeafIcon
@@ -37,7 +41,7 @@ import java.io.InputStream
 @Composable
 fun MainScreenPreview() {
     PlantIdentificationTheme {
-        MainScreenContent()
+        MainScreenContent(state = MainState(isLoading = false))
     }
 }
 
@@ -56,10 +60,13 @@ fun ChooseImageScreen(
     val openGalleryResultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uriResult: Uri? ->
             imageUri = uriResult
-            Timber.d("Uri ${uriResult.toString()}")
+            if(!context.hasInternetConnection()){
+                Toast.makeText(context, "No internet connection.", Toast.LENGTH_LONG).show()
+                return@rememberLauncherForActivityResult
+            }
             uriResult?.let {
                 val imagePath = getRealPathFromURI(uri = uriResult, context = context)
-                if(imagePath == null){
+                if (imagePath == null) {
                     Toast.makeText(context, "Image path is null.", Toast.LENGTH_LONG).show()
                     return@let
                 }
@@ -72,9 +79,14 @@ fun ChooseImageScreen(
             val uri = bitmapResult?.toImageUri(inContext = context)
             imageBitmap = bitmapResult
 
+            if(!context.hasInternetConnection()){
+                Toast.makeText(context, "No internet connection.", Toast.LENGTH_LONG).show()
+                return@rememberLauncherForActivityResult
+            }
+
             uri?.let {
                 val imagePath = getRealPathFromURI(uri = uri, context = context)
-                if(imagePath == null){
+                if (imagePath == null) {
                     Toast.makeText(context, "Image path is null.", Toast.LENGTH_LONG).show()
                     return@let
                 }
@@ -143,6 +155,7 @@ fun ChooseImageScreen(
 
 @Composable
 fun MainScreenContent(
+    state: MainState = MainState(),
     onClickTakePhotoButton: () -> Unit = {},
     onClickSelectGalleryButton: () -> Unit = {}) {
 
@@ -150,33 +163,42 @@ fun MainScreenContent(
 
         Spacer(modifier = Modifier.weight(0.09f))
 
-        Column(
-            modifier = Modifier
-                .weight(0.8f)
-                .padding(top = 30.dp)
-                .fillMaxSize()
-                .padding(horizontal = 12.dp),
-            verticalArrangement = Arrangement.spacedBy(
-                12.dp,
-                alignment = Alignment.CenterVertically),
-            horizontalAlignment = Alignment.CenterHorizontally) {
+        Box(modifier = Modifier.weight(0.8f)) {
 
 
+            if(state.isLoading) {
+                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color(0xFF1C681C))
+            }
 
-            LeafIcon(modifier = Modifier.aspectRatio(3f))
-            TextTitle(modifier = Modifier)
-            ButtonItem(
-                icon = R.drawable.ic_camera,
-                text = "Take Photo",
-                contentDescription = "Take Photo",
-                onClick = onClickTakePhotoButton)
-            ButtonItem(
-                icon = R.drawable.ic_gallery,
-                text = "Select from Gallery",
-                contentDescription = "Select from Gallery",
-                onClick = onClickSelectGalleryButton)
+            Column(
+                modifier = Modifier
+
+                    .padding(top = 30.dp)
+                    .fillMaxSize()
+                    .padding(horizontal = 12.dp),
+                verticalArrangement = Arrangement.spacedBy(
+                    12.dp,
+                    alignment = Alignment.CenterVertically),
+                horizontalAlignment = Alignment.CenterHorizontally) {
 
 
+                LeafIcon(modifier = Modifier.aspectRatio(3f))
+                TextTitle(modifier = Modifier)
+                ButtonItem(
+                    isEnabled = !state.isLoading,
+                    icon = R.drawable.ic_camera,
+                    text = "Take Photo",
+                    contentDescription = "Take Photo",
+                    onClick = onClickTakePhotoButton)
+                ButtonItem(
+                    isEnabled = !state.isLoading,
+                    icon = R.drawable.ic_gallery,
+                    text = "Select from Gallery",
+                    contentDescription = "Select from Gallery",
+                    onClick = onClickSelectGalleryButton)
+
+
+            }
         }
         Spacer(modifier = Modifier.weight(0.09f))
     }
