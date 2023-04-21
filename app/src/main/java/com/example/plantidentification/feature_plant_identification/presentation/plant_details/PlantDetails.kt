@@ -55,9 +55,11 @@ fun PlantDetailsContent(state: MainState = MainState(), onClickBackButton: () ->
             item {
 
                 Text(
-                    modifier = Modifier.padding(vertical = 12.dp),
+                    modifier = Modifier
+                        .padding(horizontal = 14.dp)
+                        .padding(bottom = 2.dp, top = 6.dp),
                     text = state.plantName.uppercase(Locale.ROOT),
-                    fontSize = 22.sp,
+                    fontSize = TextUnit(24f, TextUnitType.Sp),
                     fontWeight = FontWeight.Bold,
                     overflow = TextOverflow.Visible,
                     color = Color.Black,
@@ -87,7 +89,7 @@ fun PlantDetailsContent(state: MainState = MainState(), onClickBackButton: () ->
                     text = state.plantDescription,
                     style = TextStyle(
                         textAlign = TextAlign.Start,
-                        fontSize = 16.sp,
+                        fontSize = TextUnit(16f, TextUnitType.Sp),
                         lineHeight = 23.sp
                     ), overflow = TextOverflow.Clip)
 
@@ -97,7 +99,7 @@ fun PlantDetailsContent(state: MainState = MainState(), onClickBackButton: () ->
                     border = BorderStroke(1.dp, Color.Black)) {
                     Text(
                         text = "Back",
-                        fontSize = 16.sp,
+                        fontSize = TextUnit(16f, TextUnitType.Sp),
                         color = Color.Black,
                         modifier = Modifier.padding(horizontal = 16.dp))
                 }
