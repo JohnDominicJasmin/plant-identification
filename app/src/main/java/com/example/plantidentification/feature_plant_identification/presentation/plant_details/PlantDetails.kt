@@ -63,10 +63,23 @@ fun PlantDetailsContent(state: MainState = MainState(), onClickBackButton: () ->
                     color = Color.Black,
                     textAlign = TextAlign.Center)
 
+
+                Text(
+                    text = "Probability: ${state.plantProbability}",
+                    fontSize = TextUnit(16f, TextUnitType.Sp),
+                    color = Color.Black,
+                    modifier = Modifier.padding(top = 2.dp, bottom = 12.dp),
+                    textAlign = TextAlign.Center)
+
+
                 AsyncImage(
-                    modifier = Modifier.clip(shape = RoundedCornerShape(10.dp)),
+                    modifier = Modifier
+                        .aspectRatio(1.5f)
+                        .clip(shape = RoundedCornerShape(10.dp))
+                        .padding(all = 8.dp),
                     model = state.plantImageUrl,
                     contentDescription = "Plant Image",
+                    contentScale = ContentScale.Fit,
                     placeholder = painterResource(id = R.drawable.placeholder))
 
                 Text(
