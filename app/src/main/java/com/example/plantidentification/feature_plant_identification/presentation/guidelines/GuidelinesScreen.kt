@@ -89,7 +89,7 @@ fun GuidelinesContent(onClickStartButton: () -> Unit = {}) {
                     text = context.getString(R.string.guidelines),
                     style = TextStyle(
                         textDecoration = TextDecoration.Underline,
-                        textAlign = TextAlign.Start,
+                        textAlign = TextAlign.Justify,
                         fontSize = TextUnit(value = 16f, type = TextUnitType.Sp),
                         lineHeight = 28.sp,
                         color = Color.White
