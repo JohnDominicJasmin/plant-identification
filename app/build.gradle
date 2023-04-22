@@ -8,6 +8,14 @@ plugins {
 }
 apply plugin: 'dagger.hilt.android.plugin' // add this line
 android {
+    signingConfigs {
+        debug {
+            storeFile file('/home/miko/keystores/plant-identification.jks')
+            storePassword '654321'
+            keyAlias 'plant-identification-keystore'
+            keyPassword '654321'
+        }
+    }
     namespace 'com.example.plantidentification'
     compileSdk 33
 
@@ -22,12 +30,15 @@ android {
         vectorDrawables {
             useSupportLibrary true
         }
+        signingConfig signingConfigs.debug
     }
 
     buildTypes {
         release {
-            minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android-optimize.txt'), 'proguard-rules.pro'
+            minifyEnabled true
+            shrinkResources true
+            crunchPngs true
         }
     }
     compileOptions {
