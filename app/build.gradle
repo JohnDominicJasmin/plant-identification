@@ -10,7 +10,7 @@ apply plugin: 'dagger.hilt.android.plugin' // add this line
 android {
     signingConfigs {
         debug {
-            storeFile file('/home/miko/keystores/plant-identification.jks')
+            storeFile file('/home/miko/keystores/keyssss/plant-identification.jks')
             storePassword '654321'
             keyAlias 'plant-identification-keystore'
             keyPassword '654321'
