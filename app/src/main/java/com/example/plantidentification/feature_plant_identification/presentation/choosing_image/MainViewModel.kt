@@ -25,8 +25,12 @@ class MainViewModel
     private val _event = MutableSharedFlow<MainEvent>()
     val event = _event.asSharedFlow()
 
-    init{
+    init {
         getStartingDestination()
+    }
+
+    fun resetState() {
+        _state.update { MainState() }
     }
 
     fun recognizeFood(imagePath: String) {
@@ -36,47 +40,72 @@ class MainViewModel
                 mainRepository.recognizeFood(imagePath)
             }.onSuccess { plantSpecies ->
                 hideLoading()
-                plantSpecies.getPlantWithHighestProbability()?.let { plant ->
-                    val name = plant.plantDetails.commonNames.maxBy { it.length }
-                    val plantProbability = String.format("%.2f", plant.probability)
-
-                    _state.update {
-                        it.copy(
-                            plantName = name,
-                            plantDescription = plant.plantDetails.wikiDescription.value,
-                            plantImageUrl = plantSpecies.images[0].url,
-                            plantProbability = plantProbability
-                        )
-                    }
-
-                    _event.emit(value = MainEvent.GetPlantInfo)
+                if (!plantSpecies.isPlant) {
+                    _state.update { it.copy(isPlant = false) }
+                    return@onSuccess
                 }
+
+                plantSpecies.getPlantWithHighestProbability()?.let { plant ->
+
+                    runCatching {
+                        plant.plantDetails.commonNames.maxBy { it.length }
+                    }.onSuccess { plantName ->
+                        val plantProbability =
+                            String.format("%.2f", plantSpecies.isPlantProbability)
+                        _state.update {
+                            it.copy(
+                                plantName = plantName,
+                                plantDescription = plant.plantDetails.wikiDescription.value,
+                                plantImageUrl = plantSpecies.images[0].url,
+                                plantProbability = plantProbability
+                            )
+                        }
+                        _event.emit(value = MainEvent.GetPlantInfo)
+                    }.onFailure {
+                        val plantProbability =
+                            String.format("%.2f", plantSpecies.isPlantProbability)
+                        _state.update {
+                            it.copy(
+                                plantName = plant.plantName,
+                                plantDescription = plant.plantDetails.wikiDescription.value,
+                                plantImageUrl = plantSpecies.images[0].url,
+                                plantProbability = plantProbability
+                            )
+                        }
+                        _event.emit(value = MainEvent.GetPlantInfo)
+                    }
+                }
+
 
             }.onFailure {
                 hideLoading()
-                 _event.emit(value = MainEvent.ShowToastMessage(message = it.message.toString()))
+                _event.emit(value = MainEvent.ShowToastMessage(message = it.message.toString()))
             }
         }
     }
 
-    private fun showLoading(){
-        _state.update { it.copy(
-            isLoading = true
-        )}
+    private fun showLoading() {
+        _state.update {
+            it.copy(
+                isLoading = true
+            )
+        }
     }
 
-    private fun hideLoading(){
-        _state.update { it.copy(
-            isLoading = false
-        )}
+    private fun hideLoading() {
+        _state.update {
+            it.copy(
+                isLoading = false
+            )
+        }
     }
 
-    private fun getStartingDestination(){
+    private fun getStartingDestination() {
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
                 mainRepository.userReadAppInformation()
-            }.onSuccess {userRead ->
-                val startingDestination = if(userRead) "choosing-image" else "guidelines"
+            }.onSuccess { userRead ->
+                val startingDestination = if (userRead) "choosing-image" else "guidelines"
                 Timber.v("Starting Destination: $startingDestination")
                 _state.update {
                     it.copy(startingDestination = startingDestination)
@@ -88,7 +117,7 @@ class MainViewModel
         }
     }
 
-    fun navigateToPlantInfoCompleted(){
+    fun navigateToPlantInfoCompleted() {
         viewModelScope.launch(Dispatchers.IO) {
             runCatching {
                 mainRepository.setUserReadAppInformation()
@@ -104,7 +133,7 @@ class MainViewModel
     private fun PlantSpeciesDto.getPlantWithHighestProbability(): Suggestion? {
         var maxProbability = -1.0
         var maxPlant: Suggestion? = null
-        if(suggestions.isEmpty()) return null
+        if (suggestions.isEmpty() || suggestions == null) return null
         suggestions.forEach {
             val probability = it.probability
             if (probability > maxProbability) {

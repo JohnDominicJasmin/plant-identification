@@ -11,7 +11,12 @@ import com.example.plantidentification.feature_plant_identification.core.utils.s
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import timber.log.Timber
-import java.io.*
+import java.io.ByteArrayOutputStream
+import java.io.File
+import java.io.FileInputStream
+import java.io.FileOutputStream
+import java.io.InputStream
+import java.io.OutputStream
 
 
 object ImageUtils {
@@ -29,14 +34,11 @@ object ImageUtils {
 
     fun Bitmap.toImageUri(inContext: Context): Uri? {
         val bytes = ByteArrayOutputStream()
-        compress(Bitmap.CompressFormat.JPEG, 100, bytes)
-        val path = MediaStore.Images.Media.insertImage(
-            inContext.contentResolver,
-            this,
-            "CyclistanceImage",
-            null)
-        return Uri.parse(path)
+        this.compress(Bitmap.CompressFormat.JPEG, 100, bytes)
+        val path = MediaStore.Images.Media.insertImage(inContext.contentResolver, this, "PlantIdentification", null)
+        return Uri.parse(path.toString())
     }
+
 
     fun Context.saveImageToGallery(
         bitmap: Bitmap,

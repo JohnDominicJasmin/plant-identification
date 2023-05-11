@@ -9,18 +9,24 @@ import android.widget.Toast
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.result.launch
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.CircularProgressIndicator
+import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import com.example.plantidentification.R
+import com.example.plantidentification.feature_plant_identification.core.utils.ImageUtils.saveImageToGallery
 import com.example.plantidentification.feature_plant_identification.core.utils.ImageUtils.toImageUri
 import com.example.plantidentification.feature_plant_identification.core.utils.connection.ConnectionStatus.hasInternetConnection
 import com.example.plantidentification.feature_plant_identification.core.utils.requestPermission
@@ -41,7 +47,7 @@ import java.io.InputStream
 @Composable
 fun MainScreenPreview() {
     PlantIdentificationTheme {
-        MainScreenContent(state = MainState(isLoading = false))
+        MainScreenContent(state = MainState(isLoading = true))
     }
 }
 
@@ -60,14 +66,14 @@ fun ChooseImageScreen(
     val openGalleryResultLauncher =
         rememberLauncherForActivityResult(ActivityResultContracts.GetContent()) { uriResult: Uri? ->
             imageUri = uriResult
-            if(!context.hasInternetConnection()){
+            if (!context.hasInternetConnection()) {
                 Toast.makeText(context, "No internet connection.", Toast.LENGTH_LONG).show()
                 return@rememberLauncherForActivityResult
             }
             uriResult?.let {
                 val imagePath = getRealPathFromURI(uri = uriResult, context = context)
                 if (imagePath == null) {
-                    Toast.makeText(context, "Image path is null.", Toast.LENGTH_LONG).show()
+                    Toast.makeText(context, "Image path not found.", Toast.LENGTH_LONG).show()
                     return@let
                 }
                 viewModel.recognizeFood(imagePath = imagePath)
@@ -79,7 +85,7 @@ fun ChooseImageScreen(
             val uri = bitmapResult?.toImageUri(inContext = context)
             imageBitmap = bitmapResult
 
-            if(!context.hasInternetConnection()){
+            if (!context.hasInternetConnection()) {
                 Toast.makeText(context, "No internet connection.", Toast.LENGTH_LONG).show()
                 return@rememberLauncherForActivityResult
             }
@@ -139,6 +145,8 @@ fun ChooseImageScreen(
                 is MainEvent.ShowToastMessage -> {
                     Toast.makeText(context, event.message, Toast.LENGTH_SHORT).show()
                 }
+
+
                 is MainEvent.GetPlantInfo -> {
                     navController.navigate(route = "plant-info")
                 }
@@ -159,48 +167,74 @@ fun MainScreenContent(
     onClickTakePhotoButton: () -> Unit = {},
     onClickSelectGalleryButton: () -> Unit = {}) {
 
-    Row(modifier = Modifier) {
+    Row(modifier = Modifier.fillMaxSize()) {
 
         Spacer(modifier = Modifier.weight(0.09f))
 
-        Box(modifier = Modifier.weight(0.8f)) {
+        Box(modifier = Modifier.fillMaxSize()) {
+
+            Image(
+                painter = painterResource(id = R.drawable.batangas_lakelands_review_14_1__8_),
+                contentDescription = "Background Image",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.FillHeight,
+
+                )
 
 
-            if(state.isLoading) {
-                CircularProgressIndicator(modifier = Modifier.align(Alignment.Center), color = Color(0xFF1C681C))
-            }
 
             Column(
                 modifier = Modifier
 
-                    .padding(top = 30.dp)
+                    .padding(top = 20.dp)
                     .fillMaxSize()
                     .padding(horizontal = 12.dp),
-                verticalArrangement = Arrangement.spacedBy(
-                    12.dp,
-                    alignment = Alignment.CenterVertically),
+                verticalArrangement = Arrangement.Top,
                 horizontalAlignment = Alignment.CenterHorizontally) {
 
 
-                LeafIcon(modifier = Modifier.aspectRatio(3f))
-                TextTitle(modifier = Modifier)
-                ButtonItem(
-                    isEnabled = !state.isLoading,
-                    icon = R.drawable.ic_camera,
-                    text = "Take Photo",
-                    contentDescription = "Take Photo",
-                    onClick = onClickTakePhotoButton)
-                ButtonItem(
-                    isEnabled = !state.isLoading,
-                    icon = R.drawable.ic_gallery,
-                    text = "Select from Gallery",
-                    contentDescription = "Select from Gallery",
-                    onClick = onClickSelectGalleryButton)
+                Image(
+                    modifier = Modifier
+                        .padding(top = 20.dp)
+                        .scale(1.4f),
+                    painter = painterResource(id = R.drawable.logoooooooooooooooooooo),
+                    contentDescription = "Logo Batangas Lakelands")
+
+
+
+                Column(
+                    modifier = Modifier.fillMaxHeight(),
+                    verticalArrangement = Arrangement.spacedBy(
+                        8.dp,
+                        alignment = Alignment.CenterVertically)) {
+
+                    ButtonItem(
+                        isEnabled = !state.isLoading,
+                        icon = R.drawable.ic_camera,
+                        text = "Take Photo",
+                        contentDescription = "Take Photo",
+                        onClick = onClickTakePhotoButton)
+
+                    ButtonItem(
+                        isEnabled = !state.isLoading,
+                        icon = R.drawable.ic_gallery,
+                        text = "Select from Gallery",
+                        contentDescription = "Select from Gallery",
+                        onClick = onClickSelectGalleryButton)
+
+                }
 
 
             }
+
+            if (state.isLoading) {
+                CircularProgressIndicator(
+                    modifier = Modifier.align(Alignment.Center),
+                    color = Color(0xFF1C681C))
+            }
         }
         Spacer(modifier = Modifier.weight(0.09f))
+
     }
 
 

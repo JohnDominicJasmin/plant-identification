@@ -11,9 +11,9 @@ android {
     signingConfigs {
         debug {
             storeFile file('/home/miko/keystores/keyssss/plant-identification.jks')
-            storePassword '654321'
-            keyAlias 'plant-identification-keystore'
-            keyPassword '654321'
+            storePassword '43214321'
+            keyAlias 'plant-id-alias'
+            keyPassword '43214321'
         }
     }
     namespace 'com.example.plantidentification'

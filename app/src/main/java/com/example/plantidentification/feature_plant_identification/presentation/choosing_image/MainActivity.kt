@@ -48,7 +48,9 @@ class MainActivity : AppCompatActivity() {
                         }
 
                         composable(route = "plant-info"){
-                            PlantInformation(state = state, navController = navController)
+                            PlantInformation(state = state, navController = navController, onClickBackButton = {
+                                viewModel.resetState()
+                            })
                         }
                     }
                 }

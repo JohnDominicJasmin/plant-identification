@@ -81,11 +81,9 @@ class MainRepositoryImpl(
     }
 
 
-
-
     private fun getDataJsonObject(imageUri: String): JSONObject {
         val data = JSONObject()
-        data.put("api_key", "eMalbvhUDX4wFuKa8AgFzWt4Jvgh2l0r1eqyoIWx3SDbqzPdUm")
+        data.put("api_key", "27rVFvUXRmdcKtJTTNNjUmWIgss8c8CtNTvJVE4YWLat04RFOs")
 
         val images = JSONArray()
         val fileData = base64EncodeFromFile(imageUri)
